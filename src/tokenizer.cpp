@@ -235,7 +235,7 @@ void Tokenizer::endToken(Token& token, std::vector<Token>& tokens)
 void Token::debugPrint() const
 {
     std::cout << "Token (" << TokenTypeString[m_type] << ", " << "\'"
-              << m_text << "\'" << m_lineNumber << ")" << std::endl;
+              << m_text << "\' " << m_lineNumber << ")" << std::endl;
 }
 
 

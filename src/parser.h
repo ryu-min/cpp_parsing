@@ -8,6 +8,8 @@
 #include "type.h"
 #include "functiondefinition.h"
 
+#include "statement.h"
+
 class Parser
 {
 public:
@@ -17,9 +19,10 @@ public:
     void debugPrint() const noexcept;
 
 private:
-    void parseFunctionBody();
+	std::optional<std::vector<Statement>> parseFunctionBody();
+	bool expectFunctionDefinition();
 
-    bool expectFunctionDefinition();
+    std::optional<Statement> parseOneStatement();
     std::optional<Type>  expectType();
     std::optional<Token> expectIdentifier(const std::string & name = std::string());
     std::optional<Token> expectOperator(const std::string & name = std::string());

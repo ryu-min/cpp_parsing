@@ -8,7 +8,7 @@ Parser::Parser()
 {
     m_types["void"]     = Type("void", VOID);
     m_types["int"]      = Type("signed int", INT32);
-    m_types["usigned"]  = Type("usigned int", UINT32);
+    m_types["unsigned"]  = Type("unsigned int", UINT32);
     m_types["char"]     = Type("signed char", INT8);
     m_types["uint8_t"]  = Type("uint8_t", UINT8);
     m_types["double"]   = Type("double", DOUBLE);
@@ -30,15 +30,27 @@ void Parser::parse(vector<Token> &tokens)
             cerr << "Unknown identifier " << m_currentToken->m_text << ".";
             ++m_currentToken;
         }
-
     }
 }
 
-void Parser::parseFunctionBody()
+std::optional<std::vector<Statement>> Parser::parseFunctionBody()
 {
-//    if ( !expectOperator("{").has_value() ) {
-//    	t
+    if ( !expectOperator("{").has_value() ) {
+    	return nullopt;
+    }
+    
+    std::vector<Statement> statements;
+    
+    auto statement = parseOneStatement();
+    if ( statement.has_value() ) {
+    	statements.push_back(statement.value());
+    }
+    
+//    if ( !expectOperator("}").has_value() ) {
+//    	throw std::runtime_error("Unbalanced '{.'");
 //    }
+    
+    return statements;
 }
 
 bool Parser::expectFunctionDefinition()
@@ -55,7 +67,7 @@ bool Parser::expectFunctionDefinition()
             {
                 cout << "We have a function - " << possibleName->m_text;
                 FunctionDefinition function;
-                function.m_name = possibleName->m_text;
+                function.name = possibleName->m_text;
 
                 while (!expectOperator(")").has_value())
                 {
@@ -76,7 +88,7 @@ bool Parser::expectFunctionDefinition()
                         param.m_name = possibleVariableName->m_text;
                     }
                     
-                    function.m_parameters.push_back(param);
+                    function.parameters.push_back(param);
                     
                     if (expectOperator(")").has_value()) {
 						break;
@@ -86,9 +98,20 @@ bool Parser::expectFunctionDefinition()
                     	throw runtime_error("Expected ',' to separate parameters of function " + possibleName->m_text);
                     }
                 }
-				m_functions[function.m_name] = function;
-				parseFunctionBody();
-                return true;
+				auto statements = parseFunctionBody();
+                
+                if ( !statements.has_value() ) {
+                	m_currentToken = parseStart;
+                	return false;
+                }
+                
+                if ( statements.has_value() ) {
+					function.statements = statements.value();
+				}
+    
+				m_functions[function.name] = function;
+				
+				return true;
             }
             else
             {
@@ -140,9 +163,33 @@ std::optional<Token> Parser::expectOperator(const string &name)
 }
 void Parser::debugPrint() const noexcept
 {
-	std::cout << "finction size " << m_functions.size();
+	std::cout << "finction size " << m_functions.size()  << " ";
 	for (auto func : m_functions)
 	{
 		func.second.debugPrint();
 	}
+}
+std::optional<Statement> Parser::parseOneStatement() {
+	auto startToken 	= m_currentToken;
+	auto possibleType 	= expectType();
+	
+	if ( !possibleType.has_value() ) {
+		m_currentToken = startToken;
+		return nullopt;
+	}
+	
+	auto possibleVariableName = expectIdentifier();
+	if ( !possibleType.has_value() ) {
+		m_currentToken = startToken;
+		return nullopt;
+	}
+	
+	Statement statement;
+	
+	statement.kind = Statement::StatementKind::VARIABLE_DECLARATION;
+	statement.name = possibleVariableName->m_text;
+	statement.type = possibleType.value();
+	
+	
+	return statement;
 }

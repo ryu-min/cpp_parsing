@@ -13,6 +13,8 @@ enum BUILTIN_TYPE
     SCTRUCT,
 };
 
+
+/// TODO remove m_ prefix
 struct Type
 {
     Type(const std::string & name = "", BUILTIN_TYPE type = VOID)  : m_name(name) , m_type(type) {}

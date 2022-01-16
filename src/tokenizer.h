@@ -4,9 +4,9 @@
 
 enum TokenType
 {
-    WHITESPACE,
-    IDENTIFIER,
-    INTEGER_LITERAL,
+	WHITESPACE,
+	IDENTIFIER,
+	INTEGER_LITERAL,
     DOUBLE_LITERAL,
     STRING_LITERAL,
     OPERATOR,
@@ -32,6 +32,7 @@ static const char* TokenTypeString[] =
 
 class Token
 {
+	/// TODO remove m_ prefix here
 public:
     enum TokenType	m_type {WHITESPACE};
     std::string		m_text;

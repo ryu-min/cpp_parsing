@@ -18,12 +18,7 @@ int main()
 {
 	cout << "simpleparser" << endl;
 	string programText = readFile("/home/z1p1t/workspace/cpp_parsing /src/test.myc");
-//	cout << "===============" << endl;
-//	cout << "====program====" << endl;
-//	cout << "===============" << endl << endl;
-//	//cout << programText << endl;
-
-
+	
 	Tokenizer tokenizer;
 	vector<Token> tokens = tokenizer.parse(programText);
 	
@@ -31,15 +26,14 @@ int main()
 	cout << "=====tokens=====" << endl;
 	cout << "================" << endl << endl;
 
-//    for (Token currToken : tokens)
-//	{
-//		currToken.debugPrint();
-//	}
+    for (Token currToken : tokens)
+	{
+		currToken.debugPrint();
+	}
 
     Parser parser;
     parser.parse(tokens);
     parser.debugPrint();
-	
-    /// https://www.youtube.com/watch?v=cCUGM6j4S4o&list=PLaXsdjqTEdE6HsnjMjFzsE-7ag-kxWIZn&index=2&ab_channel=uliwitness - 42:17
-	return 0;
+	//1:10
+    return 0;
 }
